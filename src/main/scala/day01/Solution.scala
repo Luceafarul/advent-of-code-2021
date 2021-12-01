@@ -43,5 +43,12 @@ In this example, there are 7 measurements that are larger than the previous meas
 How many measurements are larger than the previous measurement?
  */
 object Solution {
-  def depthMeasurementIncreasesCounter(xs: List[Int]): Int = ???
+  def depthMeasurementIncreasesCounter(xs: List[Int]): Int = {
+    val (_, counter) = xs.drop(1).foldLeft((xs.head, 0)) { (acc, current) =>
+      val (prev, counter) = acc
+      if (current > prev) (current, counter + 1)
+      else (current, counter)
+    }
+    counter
+  }
 }
