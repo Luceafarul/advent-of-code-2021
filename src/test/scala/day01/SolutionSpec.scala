@@ -10,5 +10,11 @@ class SolutionSpec extends AnyWordSpec with Matchers {
 
       Solution.depthMeasurementIncreasesCounter(measurements) shouldBe 7
     }
+
+    "return count of increases three measurement sliding window" in {
+      val measurements = List(199, 200, 208, 210, 200, 207, 240, 269, 260, 263)
+
+      Solution.threeMeasurementSlidingWindowCounter(measurements) shouldBe 5
+    }
   }
 }

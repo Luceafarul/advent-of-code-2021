@@ -4,8 +4,10 @@ object App extends App {
   val source = io.Source.fromFile("src/main/resources/report.txt")
 
   val lines = source.getLines()
+  val numbers: List[Int] = lines.map(_.toInt).toList
+
+  println(Solution.depthMeasurementIncreasesCounter(numbers))
+  println(Solution.threeMeasurementSlidingWindowCounter(numbers))
 
   source.close()
-
-  println(Solution.depthMeasurementIncreasesCounter(lines.map(_.toInt).toList))
 }
