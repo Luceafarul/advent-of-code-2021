@@ -1,7 +1,7 @@
 package day01
 
 object App extends App {
-  val source = io.Source.fromFile("src/main/resources/report.txt")
+  val source = io.Source.fromFile("src/main/resources/day01.txt")
 
   val lines = source.getLines()
   val numbers: List[Int] = lines.map(_.toInt).toList
