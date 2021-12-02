@@ -11,8 +11,11 @@ object App extends App {
     Command(commandAndValue(0), commandAndValue(1).toInt)
   }.toList
 
-  val result: Solution.Position = Solution.calculatePosition(commands)
-  println(result + " => " + result.horizontal * result.depth)
+  val result01: Solution.Position = Solution.calculatePosition(commands)
+  println(result01 + " => " + result01.horizontal * result01.depth)
+
+  val result02: Solution.Position = Solution.calculatePositionWithAim(commands)
+  println(result02 + " => " + result02.horizontal * result02.depth)
 
   source.close()
 }
