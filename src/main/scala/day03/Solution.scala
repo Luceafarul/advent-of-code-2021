@@ -136,6 +136,40 @@ object Solution {
         .replaceAll("x", "1")
     )
 
+  def oxygenGeneratorRating(
+      diagnosticReport: List[BinaryNumber]
+  ): BinaryNumber = {
+    @tailrec
+    def loop(report: List[BinaryNumber], position: Int): BinaryNumber = {
+      if (report.size == 1) report.head
+      else {
+        val (startsWithOne, startsWithZero) =
+          report.partition(_.number(position) == '1')
+        if (startsWithOne.size >= startsWithZero.size)
+          loop(startsWithOne, position + 1)
+        else loop(startsWithZero, position + 1)
+      }
+    }
+
+    loop(diagnosticReport, position = 0)
+  }
+
+  def CO2ScrubberRating(diagnosticReport: List[BinaryNumber]): BinaryNumber = {
+    @tailrec
+    def loop(report: List[BinaryNumber], position: Int): BinaryNumber = {
+      if (report.size == 1) report.head
+      else {
+        val (startsWithZero, startsWithOne) =
+          report.partition(_.number(position) == '0')
+        if (startsWithZero.size <= startsWithOne.size)
+          loop(startsWithZero, position + 1)
+        else loop(startsWithOne, position + 1)
+      }
+    }
+
+    loop(diagnosticReport, position = 0)
+  }
+
   def powerConsumption(
       gammaRate: BinaryNumber,
       epsilonRate: BinaryNumber
@@ -143,7 +177,11 @@ object Solution {
     Integer.parseInt(gammaRate.number, 2) *
       Integer.parseInt(epsilonRate.number, 2)
 
-  // TODO Replace by char?
+  def lifeSupportRating(
+      oxygenGeneratorRating: BinaryNumber,
+      CO2ScrubberRating: BinaryNumber
+  ): Int = powerConsumption(oxygenGeneratorRating, CO2ScrubberRating)
+
   private def mostCommonBit(numbers: List[BinaryNumber]): Int = {
     val (oneCount, zeroCount) = numbers.foldLeft((0, 0)) { (acc, bn) =>
       val (oneCount, zeroCount) = acc
