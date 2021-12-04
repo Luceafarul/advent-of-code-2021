@@ -73,4 +73,30 @@ Then, multiply that sum by the number that was just called when the board won,
 To guarantee victory against the giant squid, figure out which board will win first.
 What will your final score be if you choose that board?
  */
-object Solution {}
+object Solution {
+  // i:     0    1   2   3   4
+  //    [
+  // 0     [ 1,  2,  3,  4,  5],
+  // 1     [16, 17, 18, 19, 15],
+  // 2     [21, 22, 23, 24, 25],
+  // 3     [31, 32, 33, 34, 35],
+  // 4     [41, 42, 43, 44, 45],
+  //    ]
+  type Cells = List[List[Cell]]
+
+  final case class Cell(number: Int, marked: Boolean = false)
+  final case class Board(cells: Cells)
+
+  def playBingo(boards: List[Board]): Board = {
+    ???
+  }
+
+  def boardWin(board: Board): Boolean = {
+    val win = for {
+      rows <- board.cells
+      win = rows.forall(cell => cell.marked)
+    } yield win
+
+    win.contains(true)
+  }
+}
