@@ -82,21 +82,58 @@ object Solution {
   // 3     [31, 32, 33, 34, 35],
   // 4     [41, 42, 43, 44, 45],
   //    ]
-  type Cells = List[List[Cell]]
+  type Rows = List[List[Cell]]
+  type Columns = List[List[Cell]]
 
   final case class Cell(number: Int, marked: Boolean = false)
-  final case class Board(cells: Cells)
+  final case class Board(rows: Rows) {
+    def columns: Columns =
+      rows.indices.map { index =>
+        rows.map { row =>
+          row(index)
+        }
+      }.toList
 
-  def playBingo(boards: List[Board]): Board = {
-    ???
+    def markCell(number: Int): Board = {
+      val markedRows = rows.map(row =>
+        row.map(cell =>
+          if (cell.number == number) cell.copy(marked = true) else cell
+        )
+      )
+      this.copy(rows = markedRows)
+    }
+  }
+
+  def playBingo(boards: List[Board], numbers: List[Int]): (Int, List[Board]) = {
+    @tailrec
+    def loop(
+        numbers: List[Int],
+        lastNumber: Int,
+        boards: List[Board]
+    ): (Int, List[Board]) = {
+      if (numbers.isEmpty) lastNumber -> boards.filter(boardWin)
+      else {
+        val bs = boards.map(_.markCell(lastNumber))
+        if (bs.exists(boardWin)) lastNumber -> bs.filter(boardWin)
+        else loop(numbers.tail, lastNumber = numbers.head, bs)
+      }
+    }
+
+    val result = loop(numbers.tail, numbers.head, boards)
+    result
   }
 
   def boardWin(board: Board): Boolean = {
-    val win = for {
-      rows <- board.cells
-      win = rows.forall(cell => cell.marked)
-    } yield win
+    val result = board.rows.exists(_.forall(_.marked)) ||
+      board.columns.exists(_.forall(_.marked))
+    result
+  }
 
-    win.contains(true)
+  def calculateScore(board: Board, winNumber: Int): Int = {
+    val unmarkedSum = board.rows
+      .map(_.filter(cell => !cell.marked))
+      .flatMap(_.map(_.number))
+      .sum
+    unmarkedSum * winNumber
   }
 }
