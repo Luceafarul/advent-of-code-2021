@@ -14,12 +14,16 @@ object App extends App {
     .map(list => list.map(s => s.split(" ").toList.filter(_.nonEmpty)))
     .map(_.map(_.map(s => Cell(s.toInt))))
     .map(rows => Board(rows))
+    .toList
 
-  val (winNumbers, winBoards) = Solution.playBingo(boards.toList, numbers)
-  println(s"Win number: $winNumbers")
-  println(s"Win boards: ${winBoards.foreach(b => b.rows.foreach(println))}")
+  val (winNumber, winBoards) = Solution.playBingo(boards, numbers).head
   println(
-    s"Bingo score: ${winBoards.map(Solution.calculateScore(_, winNumbers))}"
+    s"Bingo score: ${winBoards.map(Solution.calculateScore(_, winNumber))}"
+  )
+  val allWinners = Solution.playBingo(boards, numbers)
+  val (lastWinNumber, lastWinBoards) = allWinners.tail.head
+  println(
+    s"Squid bingo score: ${lastWinBoards.map(Solution.calculateScore(_, lastWinNumber))}"
   )
 
   source.close()

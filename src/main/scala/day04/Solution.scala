@@ -104,23 +104,32 @@ object Solution {
     }
   }
 
-  def playBingo(boards: List[Board], numbers: List[Int]): (Int, List[Board]) = {
+  def playBingo(
+      boards: List[Board],
+      numbers: List[Int]
+  ): List[(Int, List[Board])] = {
     @tailrec
     def loop(
         numbers: List[Int],
         lastNumber: Int,
-        boards: List[Board]
-    ): (Int, List[Board]) = {
-      if (numbers.isEmpty) lastNumber -> boards.filter(boardWin)
+        boards: List[Board],
+        winners: List[(Int, List[Board])]
+    ): List[(Int, List[Board])] = {
+      if (numbers.isEmpty) winners
       else {
         val bs = boards.map(_.markCell(lastNumber))
-        if (bs.exists(boardWin)) lastNumber -> bs.filter(boardWin)
-        else loop(numbers.tail, lastNumber = numbers.head, bs)
+        if (bs.exists(boardWin)) {
+          loop(
+            numbers.tail,
+            lastNumber = numbers.head,
+            bs.filterNot(boardWin),
+            winners :+ lastNumber -> bs.filter(boardWin)
+          )
+        } else loop(numbers.tail, lastNumber = numbers.head, bs, winners)
       }
     }
 
-    val result = loop(numbers.tail, numbers.head, boards)
-    result
+    loop(numbers.tail, numbers.head, boards, List.empty)
   }
 
   def boardWin(board: Board): Boolean = {

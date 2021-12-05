@@ -77,12 +77,19 @@ class SolutionSpec extends AnyWordSpec with Matchers {
     }
 
     "correct play game and stop when any board win" in {
-      Solution.playBingo(cleanBoards, numbers) shouldBe (24, List(board3))
+      Solution.playBingo(cleanBoards, numbers).head shouldBe (24, List(board3))
     }
 
     "correct calculate game score" in {
-      val (winNumber, boards) = Solution.playBingo(cleanBoards, numbers)
+      val (winNumber, boards) = Solution.playBingo(cleanBoards, numbers).head
+
       boards.map(Solution.calculateScore(_, winNumber)) shouldBe List(4512)
+    }
+
+    "correct calculate game score for all inputs" in {
+      val (winNumber, boards) = Solution.playBingo(cleanBoards, numbers).last
+
+      boards.map(Solution.calculateScore(_, winNumber)) shouldBe List(1924)
     }
   }
 }
