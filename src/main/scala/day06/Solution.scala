@@ -82,15 +82,44 @@ How many lanternfish would there be after 256 days?
 object Solution {
 
   @tailrec
-  def lanternfishAfterDays(initialState: List[Int], days: Int): List[Int] = {
+  def lanternfishPopulationAfterDays(
+      initialState: List[Int],
+      days: Int
+  ): List[Int] = {
     if (days == 0) initialState
     else {
       val newState = initialState.map(_ - 1)
       val minusOne = newState.count(_ == -1)
-      lanternfishAfterDays(
+      lanternfishPopulationAfterDays(
         newState.map { case -1 => 6; case n => n } ++ List.fill(minusOne)(8),
         days - 1
       )
     }
+  }
+
+  def lanternfishCountAfterDays(initialState: List[Int], days: Int): Long = {
+    val state: Map[Int, Long] =
+      initialState.groupBy(i => i).map { case (n, total) => n -> total.size }
+
+    @tailrec
+    def loop(state: Map[Int, Long], days: Int): Map[Int, Long] = {
+      if (days == 0) state
+      else {
+        val newState: Map[Int, Long] = Map(
+          0 -> state.getOrElse(1, 0),
+          1 -> state.getOrElse(2, 0),
+          2 -> state.getOrElse(3, 0),
+          3 -> state.getOrElse(4, 0),
+          4 -> state.getOrElse(5, 0),
+          5 -> state.getOrElse(6, 0),
+          6 -> (state.getOrElse(7, 0L) + state.getOrElse(0, 0L)),
+          7 -> state.getOrElse(8, 0),
+          8 -> state.getOrElse(0, 0)
+        )
+        loop(newState, days - 1)
+      }
+    }
+
+    loop(state, days).values.sum
   }
 }
