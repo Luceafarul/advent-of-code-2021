@@ -8,7 +8,8 @@ object App extends App {
   val positions = lines.flatMap(_.split(",").map(_.toInt))
 
   println(
-    s"Fuel spending: ${Solution.leastFuelSpendingForChangePosition(positions)}"
+    s"Fuel spending: ${Solution.leastFuelSpendingForChangePosition(positions)}\n" +
+      s"Fuel spending with increasing cost: ${Solution.leastFuelSpendingForChangePosition(positions, Solution.spendingFuelIncreasingCost)}"
   )
 
   source.close()

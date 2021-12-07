@@ -9,5 +9,13 @@ class SolutionSpec extends AnyWordSpec with Matchers {
       val positions = List(16, 1, 2, 0, 4, 2, 7, 1, 2, 14)
       Solution.leastFuelSpendingForChangePosition(positions) shouldBe 37
     }
+
+    "spend least fuel for change position as possible with increasing cost for each step" in {
+      val positions = List(16, 1, 2, 0, 4, 2, 7, 1, 2, 14)
+      Solution.leastFuelSpendingForChangePosition(
+        positions,
+        Solution.spendingFuelIncreasingCost
+      ) shouldBe 168
+    }
   }
 }
