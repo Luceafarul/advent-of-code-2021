@@ -1,5 +1,7 @@
 package day07
 
+import scala.annotation.tailrec
+
 /*
 --- Day 7: The Treachery of Whales ---
 
@@ -44,4 +46,19 @@ position 3 (39 fuel), or position 10 (71 fuel).
 Determine the horizontal position that the crabs can align to using the least fuel possible.
 How much fuel must they spend to align to that position?
  */
-object Solution {}
+object Solution {
+  def leastFuelSpendingForChangePosition(positions: List[Int]): Int = {
+    @tailrec
+    def loop(positions: List[Int], index: Int, fuelSpend: List[Int]): Int = {
+      if (index == positions.size) fuelSpend.min
+      else {
+        val fuelSpending = positions.foldLeft(0) { (acc, elem) =>
+          acc + Math.abs(positions(index) - elem)
+        }
+        loop(positions, index + 1, fuelSpend :+ fuelSpending)
+      }
+    }
+
+    loop(positions, 0, List.empty)
+  }
+}

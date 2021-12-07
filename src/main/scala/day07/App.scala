@@ -5,9 +5,11 @@ object App extends App {
 
   val lines = source.getLines().toList
 
-  val initialState = lines.flatMap(_.split(",").map(_.toInt))
+  val positions = lines.flatMap(_.split(",").map(_.toInt))
 
-  println(s": ${}")
+  println(
+    s"Fuel spending: ${Solution.leastFuelSpendingForChangePosition(positions)}"
+  )
 
   source.close()
 }
