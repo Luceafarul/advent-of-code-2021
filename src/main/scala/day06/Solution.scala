@@ -71,8 +71,26 @@ In this example, after 18 days, there are a total of 26 fish. After 80 days,
 there would be a total of 5934.
 
 Find a way to simulate lanternfish. How many lanternfish would there be after 80 days?
+
+--- Part Two ---
+
+Suppose the lanternfish live forever and have unlimited food and space.
+Would they take over the entire ocean?
+After 256 days in the example above, there would be a total of 26984457539 lanternfish!
+How many lanternfish would there be after 256 days?
  */
 object Solution {
 
-  def lanternfishAfterDays(initialState: List[Int], days: Int): List[Int] = ???
+  @tailrec
+  def lanternfishAfterDays(initialState: List[Int], days: Int): List[Int] = {
+    if (days == 0) initialState
+    else {
+      val newState = initialState.map(_ - 1)
+      val minusOne = newState.count(_ == -1)
+      lanternfishAfterDays(
+        newState.map { case -1 => 6; case n => n } ++ List.fill(minusOne)(8),
+        days - 1
+      )
+    }
+  }
 }
