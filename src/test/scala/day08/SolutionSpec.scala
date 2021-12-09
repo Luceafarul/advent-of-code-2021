@@ -44,10 +44,17 @@ class SolutionSpec extends AnyWordSpec with Matchers {
       "bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef",
       "egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb",
       "gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce"
-    )
+    ).map { s =>
+      val Array(k, v) = s.split("\\|")
+      k.split(" ").map(_.trim).filterNot(_.isBlank).toList -> v
+        .split(" ")
+        .map(_.trim)
+        .filterNot(_.isBlank)
+        .toList
+    }.toMap
 
     "correct evaluate count of numbers 1, 4, 7, 8" in {
-      Solution.filterEasyDigits(input).size shouldBe 26
+      Solution.filterUniqueLengthDigits(input).size shouldBe 26
     }
 
     "correct decode numbers from one-line input" in {
@@ -55,16 +62,7 @@ class SolutionSpec extends AnyWordSpec with Matchers {
     }
 
     "correct decode numbers from test input" in {
-      val input = input02.map { s =>
-        val Array(k, v) = s.split("\\|")
-        k.split(" ").map(_.trim).filterNot(_.isBlank).toList -> v
-          .split(" ")
-          .map(_.trim)
-          .filterNot(_.isBlank)
-          .toList
-      }.toMap
-
-      Solution.decodedNumbers(input).sum shouldBe 61229
+      Solution.decodedNumbers(input02).sum shouldBe 61229
     }
   }
 }

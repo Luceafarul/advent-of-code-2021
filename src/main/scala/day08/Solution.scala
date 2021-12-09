@@ -149,7 +149,7 @@ For each entry, determine all of the wire/segment connections and
 decode the four-digit output values. What do you get if you add up all of the output values?
  */
 object Solution {
-  def filterEasyDigits(input: List[String]): List[String] =
+  def filterUniqueLengthDigits(input: List[String]): List[String] =
     input.filter(s =>
       s.length == 2 || s.length == 3 || s.length == 4 || s.length == 7
     )
@@ -158,32 +158,24 @@ object Solution {
     val emptyString = ""
 
     def foundNumber(numbersMap: Map[String, Int], code: String): Int = {
-      println(numbersMap)
       numbersMap.find { case (k, _) => k.toSet == code.toSet } match {
         case Some((_, v)) => v
-        case None =>
-          println(s"key set: $code")
-          -1
+        case None         => -1
       }
     }
 
     val res = input.map { case (k, v) =>
-//      println(s"key: $k")
-//      println(s"value: $v")
-//      println(numbersMap(k))
       v.map { code =>
         val res = emptyString + foundNumber(numbersMap(k), code)
-        println(s"$k -> $res")
         res
       }.mkString
     }.toList
     res.map(_.toInt)
   }
 
-  def numbersMap(codes: List[String]): Map[String, Int] = {
-    // Easy digits is 1, 4, 7 and 8, it has unique length
-    def decodeEasyDigits(codes: List[String]): Map[Int, String] = {
-      filterEasyDigits(codes).map { code =>
+  private def numbersMap(codes: List[String]): Map[String, Int] = {
+    def decodeUniqueLengthDigits(codes: List[String]): Map[Int, String] = {
+      filterUniqueLengthDigits(codes).map { code =>
         code.length match {
           case 2 => 1 -> code
           case 3 => 7 -> code
@@ -193,24 +185,31 @@ object Solution {
       }.toMap
     }
 
+    val uniqueLengthDigits = decodeUniqueLengthDigits(codes)
+
+    def intersectWith(number: Int, code: String): Set[Char] =
+      uniqueLengthDigits(number).toSet.intersect(code.toSet)
+
+    def checkSixLengthDigits(code: String): (Int, String) = {
+      if (intersectWith(4, code).sizeIs == 4) 9 -> code
+      else if (intersectWith(7, code).sizeIs == 3) 0 -> code
+      else 6 -> code
+    }
+
+    def checkFiveLengthDigits(code: String): (Int, String) = {
+      if (intersectWith(7, code).sizeIs == 3) 3 -> code
+      else if (intersectWith(4, code).sizeIs == 3) 5 -> code
+      else 2 -> code
+    }
+
     def decodeOtherDigits(codes: List[String]): Map[Int, String] = {
-      val easyDigits = decodeEasyDigits(codes)
-      println(codes.filterNot(easyDigits.values.toList.contains))
       val otherDigits =
-        codes.filterNot(easyDigits.values.toList.contains).map { code =>
-          val cs = code.toSet
-          if (code.sizeIs == 6) {
-            if (easyDigits(4).toSet.intersect(cs).sizeIs == 4) 9 -> code
-            else if (easyDigits(7).toSet.intersect(cs).sizeIs == 3) 0 -> code
-            else 6 -> code
-          } else { // code.sizeIs == 5
-            if (easyDigits(7).toSet.intersect(cs).sizeIs == 3) 3 -> code
-            else if (easyDigits(4).toSet.intersect(cs).sizeIs == 3) 5 -> code
-            else 2 -> code
-          }
+        codes.filterNot(uniqueLengthDigits.values.toList.contains).map { code =>
+          if (code.sizeIs == 6) checkSixLengthDigits(code)
+          else checkFiveLengthDigits(code)
         }
 
-      easyDigits ++ otherDigits
+      uniqueLengthDigits ++ otherDigits
     }
 
     decodeOtherDigits(codes).map { case (k, v) => v -> k }

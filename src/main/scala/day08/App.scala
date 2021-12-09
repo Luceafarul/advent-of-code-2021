@@ -20,7 +20,7 @@ object App extends App {
   }.toMap
 
   println(
-    s"Count of easy digits: ${Solution.filterEasyDigits(numbers).size}\n" +
+    s"Count of easy digits: ${Solution.filterUniqueLengthDigits(numbers).size}\n" +
       s"Sum of decoded digits: ${Solution.decodedNumbers(number).sum}"
   )
 
