@@ -5,8 +5,14 @@ object App extends App {
 
   val lines = source.getLines().toList
 
-  println(s"Total syntax error score: ${Solution
-    .totalSyntaxErrorScore(Solution.firstIncorrectClosingCharacters(lines))}\n")
+  val completionScores: List[Long] = Solution
+    .completionTotalSyntaxErrorScore(Solution.completeOpenCharacters(lines))
+    .sorted
+  println(
+    s"Total syntax error score: ${Solution
+      .totalSyntaxErrorScore(Solution.firstIncorrectClosingCharacters(lines))}\n"
+      + s"Middle completion score: ${completionScores(completionScores.size / 2)}"
+  )
 
   source.close()
 }
