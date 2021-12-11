@@ -5,9 +5,8 @@ object App extends App {
 
   val lines = source.getLines().toList
 
-  val _ = ???
-
-  println(s": ${}\n")
+  println(s"Total syntax error score: ${Solution
+    .totalSyntaxErrorScore(Solution.firstIncorrectClosingCharacters(lines))}\n")
 
   source.close()
 }
