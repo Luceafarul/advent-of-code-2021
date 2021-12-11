@@ -13,12 +13,25 @@ class SolutionSpec extends AnyWordSpec with Matchers {
       List(9, 8, 9, 9, 9, 6, 5, 6, 7, 8)
     )
 
+    val input01 = List(
+      List(2, 1, 9),
+      List(3, 9, 8),
+      List(9, 8, 5),
+      List(8, 7, 6)
+    )
+
     val lowestPoints = List(1, 0, 5, 5)
 
     "found the lowest point of the area" in {
       Solution.scanLowestPoints(
         Solution.Heightmap.ofPoints(input)
       ) should contain theSameElementsAs lowestPoints
+    }
+
+    "found the lowest point of the area 01" ignore {
+      Solution.scanLowestPoints(
+        Solution.Heightmap.ofPoints(input01)
+      ) should contain theSameElementsAs List(1, 5)
     }
 
     "correct calculate sum of risk levels" in {

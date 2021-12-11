@@ -8,8 +8,11 @@ object App extends App {
   val points = lines.map(_.split("").map(_.toInt).toList)
 
   val heightmap = Solution.Heightmap.ofPoints(points)
-  val sumOfRiskLevels =
-    Solution.riskLevelsSum(Solution.scanLowestPoints(heightmap))
+
+  val riskLevels = Solution.scanLowestPoints(heightmap)
+  println(s"Risk levels: $riskLevels")
+
+  val sumOfRiskLevels = Solution.riskLevelsSum(riskLevels)
   println(s"Sum of risk levels: $sumOfRiskLevels\n")
 
   source.close()
