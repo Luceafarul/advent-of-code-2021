@@ -1,5 +1,8 @@
 package day09
 
+import java.time.LocalTime
+import scala.annotation.tailrec
+
 /*
 --- Day 9: Smoke Basin ---
 
@@ -40,7 +43,102 @@ Find all of the low points on your heightmap.
 What is the sum of the risk levels of all low points on your heightmap?
  */
 object Solution {
-  def scanLowestPoints(input: List[List[Int]]) = ???
+  type Points = List[List[Int]]
+  final case class Heightmap(coordinates: List[Coordinate]) {
+    def markAsChecked(coordinate: Coordinate): Heightmap = Heightmap {
+      coordinates.filterNot(c =>
+        c.x == coordinate.x && c.y == coordinate.y
+      ) :+ coordinate.markChecked
+    }
+    def markAsChecked(cs: List[Coordinate]): Heightmap =
+      cs.map(markAsChecked).last
+    def notChecked(): List[Coordinate] = coordinates.filterNot(_.checked)
+    def checked(): List[Coordinate] = coordinates.filter(_.checked)
+  }
 
-  def riskLevelsSum(lowestPoints: List[Int]) = ???
+  object Heightmap {
+    def ofPoints(points: Points): Heightmap = Heightmap {
+      for {
+        p <- points
+        x <- points.indices
+        y <- p.indices
+      } yield Coordinate(x, y, points(x)(y))
+    }
+  }
+
+  final case class Coordinate(
+      x: Int,
+      y: Int,
+      value: Int,
+      checked: Boolean = false
+  ) {
+    def markChecked: Coordinate = this.copy(checked = true)
+  }
+
+  def scanLowestPoints(input: Heightmap): List[Int] = {
+    @tailrec
+    def checkAdjacent(
+        coordinate: Coordinate,
+        heightmap: Heightmap,
+        minsToCheck: Set[Coordinate] = Set.empty,
+        mins: Set[Coordinate] = Set.empty
+    ): (Heightmap, Set[Coordinate]) = {
+      println(
+        s"[${LocalTime.now}]: inside checkAdjacent... $minsToCheck and $mins"
+      )
+      val adjacent = heightmap.coordinates
+        .filter { c =>
+          (c.x == coordinate.x - 1 && c.y == coordinate.y) || // up
+          (c.x == coordinate.x + 1 && c.y == coordinate.y) || // down
+          (c.x == coordinate.x && c.y == coordinate.y - 1) || // left
+          (c.x == coordinate.x && c.y == coordinate.y + 1) // right
+        }
+      // found min
+      val min = (adjacent :+ coordinate).minBy(_.value)
+
+      // if coordinate - min, return min and updated heightmap
+      val res = (minsToCheck ++ (adjacent :+ coordinate))
+        .filter(_.value <= min.value)
+        .diff(mins)
+      if (res.isEmpty) {
+        val newHeightmap = heightmap.markAsChecked(adjacent :+ coordinate)
+        (newHeightmap, mins)
+      } else if (min == coordinate) {
+        val newHeightmap = heightmap.markAsChecked(adjacent :+ coordinate)
+        (newHeightmap, mins + min.markChecked)
+      } else {
+        val newHeightmap = heightmap.markAsChecked(adjacent :+ coordinate)
+        checkAdjacent(
+          res.head,
+          newHeightmap,
+          minsToCheck ++ res.tail,
+          mins
+        )
+      }
+    }
+
+    @tailrec
+    def loop(input: Heightmap, acc: Set[Coordinate]): Set[Coordinate] = {
+      if (input.notChecked().isEmpty) acc
+      else {
+        val coordinateToCheck = input.notChecked().head
+        val (heightmap, min) =
+          checkAdjacent(
+            coordinateToCheck,
+            input,
+            mins = acc
+          )
+
+//        println(
+//          s"coordinateToCheck: $coordinateToCheck => min $min and heightmap: $heightmap"
+//        )
+        loop(heightmap, min)
+      }
+    }
+
+    val res = loop(input, Set.empty)
+    res.toList.map(_.value)
+  }
+
+  def riskLevelsSum(lowestPoints: List[Int]): Int = lowestPoints.map(_ + 1).sum
 }
