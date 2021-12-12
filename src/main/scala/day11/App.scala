@@ -1,13 +1,15 @@
 package day11
 
 object App extends App {
-  val source = io.Source.fromResource("day10.txt")
+  val source = io.Source.fromResource("day11.txt")
 
   val lines = source.getLines().toList
 
-  val _ = ???
+  val energyLevels = lines.map(_.split("").map(_.toInt).toList)
 
-  println(s": ${}\n")
+  println(
+    s"Total flashes: ${Solution.modelFlashes(Solution.Grid.of(energyLevels), steps = 100)}\n"
+  )
 
   source.close()
 }
