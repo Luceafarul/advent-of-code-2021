@@ -26,17 +26,8 @@ class SolutionSpec extends AnyWordSpec with Matchers {
       List(5, 2, 8, 3, 7, 5, 1, 5, 2, 6)
     )
 
-    val output = List(
-      List(3, 4, 5, 4, 3),
-      List(4, 0, 0, 0, 4),
-      List(5, 0, 0, 0, 5),
-      List(4, 0, 0, 0, 4),
-      List(3, 4, 5, 4, 3)
-    )
-
     "correct evaluate grid state after 1 step" in {
       val grid = Solution.Grid.of(input)
-      val gridAfterStep1 = Solution.Grid.of(output)
       Solution.modelFlashes(grid, steps = 1)._2 shouldBe 9
     }
 
@@ -58,6 +49,11 @@ class SolutionSpec extends AnyWordSpec with Matchers {
     "correct evaluate grid state after 100 steps" in {
       val grid = Solution.Grid.of(input01)
       Solution.modelFlashes(grid, steps = 100)._2 shouldBe 1656
+    }
+
+    "correct evaluate level when all octopuses flash simultaneously" in {
+      val grid = Solution.Grid.of(input01)
+      Solution.stepWhenAllOctopusFlash(grid) shouldBe 195
     }
   }
 }

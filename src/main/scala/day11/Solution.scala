@@ -314,6 +314,52 @@ After 100 steps, there have been a total of 1656 flashes.
 
 Given the starting energy levels of the dumbo octopuses in your cavern, simulate 100 steps.
 How many total flashes are there after 100 steps?
+
+--- Part Two ---
+
+It seems like the individual flashes aren't bright enough to navigate.
+However, you might have a better option: the flashes seem to be synchronizing!
+
+In the example above, the first time all octopuses flash simultaneously is step 195:
+
+After step 193:
+5877777777
+8877777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+
+After step 194:
+6988888888
+9988888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+
+After step 195:
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+If you can calculate the exact moments when the octopuses will all flash simultaneously,
+you should be able to navigate through the cavern.
+What is the first step during which all octopuses flash?
  */
 object Solution {
   type Values = List[List[Int]]
@@ -348,42 +394,7 @@ object Solution {
     def markFlashed: Octopus = this.copy(flashed = true)
   }
 
-  object Octopus {}
-
   def modelFlashes(grid: Grid, steps: Int): (Grid, Int) = {
-    @tailrec
-    def octopusFlash(grid: Grid, flashCount: Int = 0): (Grid, Int) = {
-      if (!grid.octopuses.exists(o => o.energyLevel > 9 && !o.flashed))
-        Grid(grid.octopuses.map { o =>
-          if (o.flashed) o.copy(energyLevel = 0, flashed = false) else o
-        }) -> flashCount
-      else {
-        grid.octopuses.find(o => o.energyLevel > 9 && !o.flashed) match {
-          case Some(octopus) =>
-            val adjacent = grid.octopuses.filter { o =>
-              (o.x == octopus.x - 1 && o.y == octopus.y) || // up
-              (o.x == octopus.x + 1 && o.y == octopus.y) || // down
-              (o.x == octopus.x - 1 && o.y == octopus.y + 1) || // down
-              (o.x == octopus.x - 1 && o.y == octopus.y - 1) || // down
-              (o.x == octopus.x && o.y == octopus.y - 1) || // left
-              (o.x == octopus.x && o.y == octopus.y + 1) || // left
-              (o.x == octopus.x + 1 && o.y == octopus.y - 1) || // left
-              (o.x == octopus.x + 1 && o.y == octopus.y + 1) // right
-            }.distinct
-
-            val oldGrid =
-              grid.octopuses.filterNot((adjacent :+ octopus).contains)
-
-            val newGrid = oldGrid ++ adjacent.map(
-              _.increaseEnergyLevel
-            ) :+ octopus.markFlashed
-
-            octopusFlash(Grid(newGrid), flashCount + 1)
-          case None => Grid(grid.octopuses) -> flashCount
-        }
-      }
-    }
-
     @tailrec
     def loop(grid: Grid, steps: Int, totalFlashes: Int): (Grid, Int) = {
       if (steps == 0) grid -> totalFlashes
@@ -395,5 +406,52 @@ object Solution {
     }
 
     loop(grid, steps, totalFlashes = 0)
+  }
+
+  def stepWhenAllOctopusFlash(grid: Grid): Int = {
+    @tailrec
+    def loop(grid: Grid, steps: Int): (Grid, Int) = {
+      if (grid.octopuses.forall(_.energyLevel == 0)) grid -> steps
+      else {
+        val updatedGrid = grid.octopuses.map(_.increaseEnergyLevel)
+        val (newGrid, _) = octopusFlash(Grid(updatedGrid))
+        loop(newGrid, steps + 1)
+      }
+    }
+
+    loop(grid, 0)._2
+  }
+
+  @tailrec
+  private def octopusFlash(grid: Grid, flashCount: Int = 0): (Grid, Int) = {
+    if (!grid.octopuses.exists(o => o.energyLevel > 9 && !o.flashed))
+      Grid(grid.octopuses.map { o =>
+        if (o.flashed) o.copy(energyLevel = 0, flashed = false) else o
+      }) -> flashCount
+    else {
+      grid.octopuses.find(o => o.energyLevel > 9 && !o.flashed) match {
+        case Some(octopus) =>
+          val adjacent = grid.octopuses.filter { o =>
+            (o.x == octopus.x - 1 && o.y == octopus.y) || // up
+            (o.x == octopus.x + 1 && o.y == octopus.y) || // down
+            (o.x == octopus.x - 1 && o.y == octopus.y + 1) || // down
+            (o.x == octopus.x - 1 && o.y == octopus.y - 1) || // down
+            (o.x == octopus.x && o.y == octopus.y - 1) || // left
+            (o.x == octopus.x && o.y == octopus.y + 1) || // left
+            (o.x == octopus.x + 1 && o.y == octopus.y - 1) || // left
+            (o.x == octopus.x + 1 && o.y == octopus.y + 1) // right
+          }.distinct
+
+          val oldGrid =
+            grid.octopuses.filterNot((adjacent :+ octopus).contains)
+
+          val newGrid = oldGrid ++ adjacent.map(
+            _.increaseEnergyLevel
+          ) :+ octopus.markFlashed
+
+          octopusFlash(Grid(newGrid), flashCount + 1)
+        case None => Grid(grid.octopuses) -> flashCount
+      }
+    }
   }
 }
