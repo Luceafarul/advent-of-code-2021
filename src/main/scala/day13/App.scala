@@ -1,13 +1,15 @@
 package day13
 
 object App extends App {
-  val source = io.Source.fromResource("day10.txt")
+  val source = io.Source.fromResource("day13.txt")
 
   val lines = source.getLines().toList
 
-  val _ = ???
+  val (coordinates, foldCommands) = Solution.parse(lines)
 
-  println(s": ${}\n")
+  println(
+    s"Visible dots after first fold: ${Solution.countVisibleDots(coordinates, foldCommands.head)}\n"
+  )
 
   source.close()
 }
