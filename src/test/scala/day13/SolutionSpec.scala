@@ -60,14 +60,19 @@ class SolutionSpec extends AnyWordSpec with Matchers {
     }
 
     "calculate dots count after apply first fold" in {
-      Solution.countVisibleDots(coordinates, folds.head) shouldBe 17
+      val res = Solution.countVisibleDots(coordinates, folds.head)
+      println(s"Result 1: $res")
+      res.size shouldBe 17
     }
 
     "calculate dots count after apply second fold" in {
-      Solution.countVisibleDots(
-        Solution.foldY(coordinates, 7),
-        folds.last
-      ) shouldBe 16
+      val res = Solution
+        .countVisibleDots(
+          Solution.countVisibleDots(coordinates, folds.head),
+          folds.last
+        )
+      println(s"Result 2: $res")
+      res.size shouldBe 16
     }
   }
 }

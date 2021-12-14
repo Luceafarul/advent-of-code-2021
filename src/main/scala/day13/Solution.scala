@@ -1,5 +1,7 @@
 package day13
 
+import scala.annotation.tailrec
+
 /*
 --- Day 13: Transparent Origami ---
 
@@ -124,6 +126,13 @@ after the fold is completed count as a single dot.
 
 How many dots are visible after completing just the first fold
 instruction on your transparent paper?
+
+--- Part Two ---
+
+Finish folding the transparent paper according to the instructions.
+The manual says the code is always eight capital letters.
+
+What code do you use to activate the infrared thermal imaging camera system?
  */
 object Solution {
   final case class FoldCommand(direction: String, value: Int)
@@ -148,22 +157,29 @@ object Solution {
     (coordinates, folds)
   }
 
+  @tailrec
   def countVisibleDots(
       coordinates: List[Coordinate],
-      foldCommand: FoldCommand
-  ): Int = {
-    val positions = coordinates
-
-    if (foldCommand.direction.equalsIgnoreCase("y")) {
-      foldY(positions, foldCommand.value).size
-    } else { foldX(positions, foldCommand.value).size }
+      folds: List[FoldCommand]
+  ): List[Coordinate] = {
+    if (folds.isEmpty) coordinates
+    else countVisibleDots(countVisibleDots(coordinates, folds.head), folds.tail)
   }
 
-  def foldY(coordinates: List[Coordinate], value: Int): List[Coordinate] = {
-    val maxY = coordinates.maxBy(_.y).y
+  def countVisibleDots(
+      coordinates: List[Coordinate],
+      fold: FoldCommand
+  ): List[Coordinate] = {
+    if (fold.direction.equalsIgnoreCase("y")) foldY(coordinates, fold.value)
+    else foldX(coordinates, fold.value)
+  }
 
+  private def foldY(
+      coordinates: List[Coordinate],
+      value: Int
+  ): List[Coordinate] = {
     (coordinates.filter(_.y > value).map { c =>
-      c.move(c.x, math.abs(c.y - maxY))
+      c.move(c.x, math.abs(c.y - (value * 2)))
     } ++ coordinates.filter(_.y < value)).distinct
   }
 
@@ -172,9 +188,11 @@ object Solution {
       value: Int
   ): List[Coordinate] = {
     (coordinates.filter(_.x < value).map { c =>
-      c.move(math.abs(c.x - value), c.y)
+      c.move(math.abs(c.x - (value - 1)), c.y)
     } ++ coordinates
       .filter(_.x > value)
-      .map(c => c.move(c.x - value, c.y))).distinct
+      .map { c =>
+        c.move(math.abs(c.x - (value + 1)), c.y)
+      }).distinct
   }
 }
