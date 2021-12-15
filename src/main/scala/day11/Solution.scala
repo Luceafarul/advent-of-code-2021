@@ -434,12 +434,12 @@ object Solution {
           val adjacent = grid.octopuses.filter { o =>
             (o.x == octopus.x - 1 && o.y == octopus.y) || // up
             (o.x == octopus.x + 1 && o.y == octopus.y) || // down
-            (o.x == octopus.x - 1 && o.y == octopus.y + 1) || // down
-            (o.x == octopus.x - 1 && o.y == octopus.y - 1) || // down
+            (o.x == octopus.x - 1 && o.y == octopus.y + 1) || // up-left
+            (o.x == octopus.x - 1 && o.y == octopus.y - 1) || // up-right
             (o.x == octopus.x && o.y == octopus.y - 1) || // left
-            (o.x == octopus.x && o.y == octopus.y + 1) || // left
-            (o.x == octopus.x + 1 && o.y == octopus.y - 1) || // left
-            (o.x == octopus.x + 1 && o.y == octopus.y + 1) // right
+            (o.x == octopus.x && o.y == octopus.y + 1) || // right
+            (o.x == octopus.x + 1 && o.y == octopus.y - 1) || // down-left
+            (o.x == octopus.x + 1 && o.y == octopus.y + 1) // down-right
           }.distinct
 
           val oldGrid =
