@@ -43,5 +43,27 @@ class SolutionSpec extends AnyWordSpec with Matchers {
     "correct calculate sum of risk levels" in {
       Solution.riskLevelsSum(lowestPoints) shouldBe 15
     }
+
+    "found all basins for the lowest points of the area" in {
+      Solution
+        .basinsSizes(
+          Solution.Heightmap.ofPoints(input),
+          Solution
+            .scanForLowestPoints(
+              Solution.Heightmap.ofPoints(input)
+            )
+        ) shouldBe List(14, 9, 9, 3)
+    }
+
+    "correct calculate product of top three basins sizes" in {
+      Solution
+        .topThreeBasinsSizesProduct(
+          Solution.Heightmap.ofPoints(input),
+          Solution
+            .scanForLowestPoints(
+              Solution.Heightmap.ofPoints(input)
+            )
+        ) shouldBe 1134
+    }
   }
 }

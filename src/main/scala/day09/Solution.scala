@@ -41,6 +41,51 @@ of all low points in the heightmap is therefore 15.
 
 Find all of the low points on your heightmap.
 What is the sum of the risk levels of all low points on your heightmap?
+
+--- Part Two ---
+
+Next, you need to find the largest basins so you know what areas are most important to avoid.
+
+A basin is all locations that eventually flow downward to a single low point.
+Therefore, every low point has a basin, although some basins are very small.
+Locations of height 9 do not count as being in any basin,
+and all other locations will always be part of exactly one basin.
+
+The size of a basin is the number of locations within the basin, including the low point.
+The example above has four basins.
+
+The top-left basin, size 3:
+[21]99943210
+[3]987894921
+9856789892
+8767896789
+9899965678
+
+The top-right basin, size 9:
+21999[43210]
+398789[4]9[21]
+985678989[2]
+8767896789
+9899965678
+
+The middle basin, size 14:
+2199943210
+39[878]94921
+9[85678]9892
+[87678]96789
+9[8]99965678
+
+The bottom-right basin, size 9:
+2199943210
+3987894921
+9856789[8]92
+876789[678]9
+98999[65678]
+
+Find the three largest basins and multiply their sizes together.
+In the above example, this is 9 * 14 * 9 = 1134.
+
+What do you get if you multiply together the sizes of the three largest basins?
  */
 object Solution {
   type Points = List[List[Int]]
@@ -113,5 +158,72 @@ object Solution {
     loop(input, Set.empty)
   }
 
+  def scanForBasins(
+      heightmap: Heightmap,
+      lowestPoints: Set[Coordinate]
+  ): Map[Coordinate, Set[Coordinate]] = {
+    @tailrec
+    def checkBasin(
+        coordinate: Coordinate,
+        coordinatesToCheck: Set[Coordinate] = Set.empty,
+        basin: Set[Coordinate] = Set.empty
+    ): Set[Coordinate] = {
+      val adjacent = heightmap.coordinates.filter { c =>
+        (c.x == coordinate.x - 1 && c.y == coordinate.y) || // up
+        (c.x == coordinate.x + 1 && c.y == coordinate.y) || // down
+        (c.x == coordinate.x && c.y == coordinate.y - 1) || // left
+        (c.x == coordinate.x && c.y == coordinate.y + 1) || // right
+        (c.x == coordinate.x && c.y == coordinate.y) // current
+      }
+
+      val basinPoints = adjacent
+        .filterNot(_.value == 9)
+        .filterNot(basin.contains)
+        .toSet
+
+      val toCheck = coordinatesToCheck ++ basinPoints
+
+      if (toCheck.isEmpty) basin
+      else
+        checkBasin(
+          toCheck.head,
+          toCheck.tail,
+          basin ++ basinPoints
+        )
+    }
+
+    @tailrec
+    def loop(
+        lowestPoints: Set[Coordinate],
+        acc: Map[Coordinate, Set[Coordinate]]
+    ): Map[Coordinate, Set[Coordinate]] = {
+      if (lowestPoints.isEmpty) acc
+      else {
+        loop(
+          lowestPoints.tail,
+          acc + (lowestPoints.head -> checkBasin(lowestPoints.head))
+        )
+      }
+    }
+
+    val res = loop(lowestPoints, Map.empty)
+    res
+  }
+
   def riskLevelsSum(lowestPoints: List[Int]): Int = lowestPoints.map(_ + 1).sum
+
+  def basinsSizes(
+      heightmap: Heightmap,
+      lowestPoints: Set[Coordinate]
+  ): List[Int] = {
+    scanForBasins(heightmap, lowestPoints).values
+      .map(_.size)
+      .toList
+      .sortWith(_ > _)
+  }
+
+  def topThreeBasinsSizesProduct(
+      heightmap: Heightmap,
+      lowestPoints: Set[Coordinate]
+  ): Int = basinsSizes(heightmap, lowestPoints).take(3).product
 }

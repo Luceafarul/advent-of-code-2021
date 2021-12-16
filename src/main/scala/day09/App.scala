@@ -9,10 +9,14 @@ object App extends App {
 
   val heightmap = Solution.Heightmap.ofPoints(points)
 
-  val riskLevels = Solution.scanForLowestPoints(heightmap)
+  val lowestPoints = Solution.scanForLowestPoints(heightmap)
 
-  val sumOfRiskLevels = Solution.riskLevelsSum(riskLevels.toList.map(_.value))
+  val sumOfRiskLevels = Solution.riskLevelsSum(lowestPoints.toList.map(_.value))
   println(s"Sum of risk levels: $sumOfRiskLevels\n")
+
+  val productOfTopThreeBasinsSizes =
+    Solution.topThreeBasinsSizesProduct(heightmap, lowestPoints)
+  println(s"Product of top three basins sizes: $productOfTopThreeBasinsSizes\n")
 
   source.close()
 }
